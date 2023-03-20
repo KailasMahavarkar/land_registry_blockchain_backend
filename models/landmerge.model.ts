@@ -8,30 +8,10 @@ export const landMergeSchema = createSchema({
         auto: true,
     }),
 
-    // details of the owner
-    landId: Type.string({ required: true }),
-    firstName: Type.string({ required: true }),
-    aadharNumber: Type.string({ required: true }),
-    panNumber: Type.string({ required: true }),
-    addressProofA: Type.string({ required: true }),
-    addressProofB: Type.string({ required: true }),
-
-    // detailed logs of ongoing process
-    scrutiny: Type.array().of({
-        message: Type.string({ required: true }),
-        timestamp: Type.number({ required: true, default: Date.now() }),
-    }),
-
-    // status of ongoing process
-    status: Type.string({
-        required: true,
-        default: "pending",
-    }),
-
     // property ids to be merged
-    propertiyIds: Type.array().of({
-        type: Type.string({ required: true }),
-    }),
+    propertyId: Type.number({ required: true }),
+    childIds: Type.array({ required: true }).of(Type.number()),
+    status: Type.string({ required: true, default: "pending" }),
 
     // basic timestamps
     createTS: Type.number({ required: true, default: Date.now() }),
@@ -39,5 +19,5 @@ export const landMergeSchema = createSchema({
     updateTS: Type.number({ required: true, default: Date.now() }),
 });
 
-const LandRegisterModel = typedModel("landmerge", landMergeSchema);
-export default LandRegisterModel;
+const LandMergeModel = typedModel("landmerge", landMergeSchema);
+export default LandMergeModel;

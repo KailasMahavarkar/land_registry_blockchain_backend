@@ -12,12 +12,15 @@ const schema = {
     type: 'object',
     properties: {
         propertyId: { type: 'number' },
-        createdOn: { type: 'string' },
         ownerName: {
             type: 'array',
             items: { type: 'string' }
         },
-        propertyArea: {
+        propertyLength: {
+            type: 'array',
+            items: { type: 'number' }
+        },
+        propertyWidth: {
             type: 'array',
             items: { type: 'number' }
         },
@@ -29,14 +32,6 @@ const schema = {
             type: 'array',
             items: { type: 'string' }
         },
-        ownerAddressProofA: {
-            type: 'array',
-            items: { type: 'string' }
-        },
-        ownerAddressProofB: {
-            type: 'array',
-            items: { type: 'string' }
-        },
         surveyNumber: {
             type: 'array',
             items: { type: 'number' }
@@ -44,9 +39,31 @@ const schema = {
         subSurveyNumber: {
             type: 'array',
             items: { type: 'number' }
+        },
+
+        documentDocId: {
+            type: 'array',
+            items: { type: 'string' }
+        },
+        documentHash: {
+            type: 'array',
+            items: { type: 'string' }
+        },
+        documentLink: {
+            type: 'array',
+            items: { type: 'string' }
+        },
+        documentName: {
+            type: 'array',
+            items: { type: 'string' }
         }
     },
-    required: ['propertyId', 'createdOn']
+    required: [
+        'propertyId', 'ownerName', 'propertyLength',
+        'propertyWidth',
+        'ownerAadhaarCardNumber',
+        'ownerPanCardNumber',
+        'surveyNumber', 'subSurveyNumber']
 };
 
 // compile the schema
@@ -56,18 +73,18 @@ const landSplit = async (req, res) => {
     try {
         const {
             propertyId,
-            createdOn,
             ownerName,
-            propertyArea,
+            propertyLength,
+            propertyWidth,
             ownerAadhaarCardNumber,
             ownerPanCardNumber,
-            ownerAddressProofA,
-            ownerAddressProofB,
             surveyNumber,
             subSurveyNumber,
+            documentDocId,
+            documentHash,
+            documentLink,
+            documentName
         } = req.body;
-
-
 
 
         // validate the request body
@@ -84,29 +101,32 @@ const landSplit = async (req, res) => {
 
         // Create a new document using the LandSplitModel schema
         const newLandSplit = new LandSplitModel({
+            createdOn: new Date().toISOString(),
             propertyId,
-            createdOn,
             ownerName,
-            propertyArea,
+            propertyLength,
+            propertyWidth,
             ownerAadhaarCardNumber,
             ownerPanCardNumber,
-            ownerAddressProofA,
-            ownerAddressProofB,
             surveyNumber,
             subSurveyNumber,
+            documentDocId,
+            documentHash,
+            documentLink,
+            documentName,
         });
 
         // Save the document to the database
         await newLandSplit.save();
 
         // Return a success response
-        res.status(200).json({
+        return res.status(200).json({
             status: "success",
             msg: "Land split created successfully",
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({
+        return res.status(500).json({
             status: "error",
             msg: "An error occurred while creating the land split",
         });

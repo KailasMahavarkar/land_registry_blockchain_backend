@@ -11,29 +11,22 @@ const landSplitSchema = createSchema({
     createdOn: Type.string({
         required: true,
     }),
-    ownerName: Type.array().of({
-        type: Type.string({ default: "" }),
-    }),
-    propertyArea: Type.array().of({
-        type: Type.number({ default: 0 }),
-    }),
-    ownerAadhaarCardNumber: Type.array().of({
-        type: Type.string({ default: "" }),
-    }),
-    ownerPanCardNumber: Type.array().of({
-        type: Type.string({ default: "" }),
-    }),
-    ownerAddressProofA: Type.array().of({
-        type: Type.string({ default: "" }),
-    }),
-    ownerAddressProofB: Type.array().of({
-        type: Type.string({ default: "" }),
-    }),
-    surveyNumber: Type.array().of({
-        type: Type.number({ default: 0 }),
-    }),
-    subSurveyNumber: Type.array().of({
-        type: Type.number({ default: 0 }),
+    ownerName: Type.array().of(
+        Type.string({})
+    ),
+    propertyLength: Type.array().of(Type.number({})),
+    propertyWidth: Type.array().of(Type.number({})),
+    ownerAadhaarCardNumber: Type.array().of(Type.string({})),
+    ownerPanCardNumber: Type.array().of(Type.string({})),
+    surveyNumber: Type.array().of(Type.number({})),
+    subSurveyNumber: Type.array().of(Type.number({})),
+
+    documentDocId: Type.array().of(Type.string({})),
+    documentHash: Type.array().of(Type.string({})),
+    documentLink: Type.array().of(Type.string({})),
+    documentName: Type.array().of(Type.string({})),
+    status: Type.string({
+        default: "pending",
     }),
 
     // basic timestamps

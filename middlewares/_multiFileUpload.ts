@@ -3,7 +3,7 @@ import cloudinary from "../cloudinary";
 
 
 const _multipleFileUpload = async (req, res, next) => {
-    console.log("starting ... single upload --")
+    console.log("starting ... multi image upload --")
     try {
 
         let streamUpload = (req) => {
@@ -39,9 +39,10 @@ const _multipleFileUpload = async (req, res, next) => {
             return await streamUpload(req);
         }
 
-        req.multipleImages = await upload(req)
-
-        console.log("leaving ... single upload --")
+        const uploadResult = await upload(req);
+        console.log(uploadResult)
+        req.multipleImages = uploadResult
+        console.log("leaving ... multiple upload --")
         next()
 
     } catch (error) {

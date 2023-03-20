@@ -1,8 +1,10 @@
-import express from "express";
 import Ajv from "ajv";
-import TransferModel from "../../models/landtransfer.model"
+import TransferModel from "../../models/landtransfer.model";
 
-const router = express.Router();
+import LandRegisterModel from "../../models/landregister.model";
+import LandSplitModel from "../../models/landsplit.model";
+import LandMergeModel from "../../models/landsplit.model";
+import LandTransferModel from "../../models/landtransfer.model";
 
 // create an instance of Ajv validator
 const validator = new Ajv({ allErrors: true });
@@ -10,40 +12,37 @@ const validator = new Ajv({ allErrors: true });
 // create a validation function using the schema
 const validateTransferRequest = validator.compile({
     type: "object",
-    required: [
-        "landId",
-        "firstName",
-        "aadharNumber",
-        "panNumber",
-        "addressProofA",
-        "addressProofB",
-    ],
     properties: {
-        landId: { type: "string" },
-        firstName: { type: "string" },
-        aadharNumber: { type: "string" },
-        panNumber: { type: "string" },
-        addressProofA: { type: "string" },
-        addressProofB: { type: "string" },
-        scrutiny: {
+        propertyId: { type: "number" },
+        newOwnerName: { type: "string" },
+        newOwnerAadhaarCardNumber: { type: "string" },
+        newOwnerPanCardNumber: { type: "string" },
+        documents: {
             type: "array",
             items: {
                 type: "object",
                 properties: {
-                    message: { type: "string" },
-                    timestamp: { type: "number" },
-                },
+                    docId: { type: "string" },
+                    name: { type: "string" },
+                    link: { type: "string" },
+                    hash: { type: "string" },
+                    verified: { type: "boolean" },
+                }
             },
         },
-        status: { type: "string" },
-        createTS: { type: "number" },
-        expireTS: { type: "number" },
-        updateTS: { type: "number" },
     },
+    required: [
+        "propertyId",
+        "newOwnerName",
+        "newOwnerAadhaarCardNumber",
+        "newOwnerPanCardNumber",
+        "documents",
+
+    ]
 });
 
 // create a route to handle POST requests to create a new transfer
-router.post("/", async (req, res) => {
+const transferLand = async (req, res) => {
     // validate the request body using the Ajv validator
     const valid = validateTransferRequest(req.body);
 
@@ -57,6 +56,21 @@ router.post("/", async (req, res) => {
     }
 
     try {
+
+        // check if the propertyId exists in the database
+        const findRegister = await LandRegisterModel.exists({ propertyId: req.body.propertyId });
+        const findTransfer = await LandTransferModel.exists({ propertyId: req.body.propertyId });
+        const findSplit = await LandSplitModel.exists({ propertyId: req.body.propertyId });
+        const findMerge = await LandMergeModel.exists({ propertyId: req.body.propertyId });
+
+        // if anyof the above is true, send a 400 Bad Request response with an error message
+        if (findRegister || findTransfer || findSplit || findMerge) {
+            return res.status(400).json({
+                status: "error",
+                message: "Property already exists",
+            });
+        }
+
         // create a new transfer document using the request body
         const newTransfer = new TransferModel(req.body);
 
@@ -77,6 +91,6 @@ router.post("/", async (req, res) => {
             error: error.message,
         });
     }
-});
+}
 
-export default router;
+export default transferLand;

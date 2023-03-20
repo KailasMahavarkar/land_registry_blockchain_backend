@@ -1,20 +1,18 @@
-import { Router } from 'express';
 import Ajv from 'ajv';
 import LandRegisterModel from "../../models/landregister.model";
 
-const router = Router();
 
 // create a new land register record
-router.post('/', async (req, res) => {
+const registerNewLand = async (req, res) => {
     const ajv = new Ajv();
     const validate = ajv.compile({
         type: 'object',
         properties: {
-            propertyId: { type: 'number' },
             propertyHouseNumber: { type: 'string' },
             propertyStreetName: { type: 'string' },
             propertyType: { type: 'string' },
-            propertyArea: { type: 'number' },
+            propertyLength: { type: 'number' },
+            propertyWidth: { type: 'number' },
             propertyPincode: { type: 'number' },
             propertyState: { type: 'string' },
             propertyVillage: { type: 'string' },
@@ -23,8 +21,7 @@ router.post('/', async (req, res) => {
             ownerName: { type: 'string' },
             aadharCardNumber: { type: 'string' },
             panCardNumber: { type: 'string' },
-            addressProofA: { type: 'string' },
-            addressProofB: { type: 'string' },
+
             transfered: { type: 'boolean' },
             transferedTo: { type: 'number' },
             transferedFrom: {
@@ -38,16 +35,34 @@ router.post('/', async (req, res) => {
             surveyNumber: { type: 'number' },
             subSurveyNumber: { type: 'number' },
             createdOn: { type: 'string' },
-            createTS: { type: 'number' },
-            expireTS: { type: 'number' },
-            updateTS: { type: 'number' },
+            // each document is an object with a name, link, hashstring,verified
+            documents: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    properties: {
+                        name: { type: 'string' },
+                        link: { type: 'string' },
+                        docId: { type: 'string' },
+                        verified: { type: 'boolean' },
+                        hash: { type: 'string' },
+                    },
+                    required: [
+                        'name',
+                        'link',
+                        'docId',
+                        'verified',
+                        'hash',
+                    ]
+                }
+            }
         },
         required: [
-            'propertyId',
             'propertyHouseNumber',
             'propertyStreetName',
             'propertyType',
-            'propertyArea',
+            'propertyLength',
+            'propertyWidth',
             'propertyPincode',
             'propertyState',
             'propertyVillage',
@@ -56,8 +71,6 @@ router.post('/', async (req, res) => {
             'ownerName',
             'aadharCardNumber',
             'panCardNumber',
-            'addressProofA',
-            'addressProofB',
             'transfered',
             'transferedTo',
             'transferedFrom',
@@ -65,6 +78,7 @@ router.post('/', async (req, res) => {
             'surveyNumber',
             'subSurveyNumber',
             'createdOn',
+            "documents"
         ],
     });
 
@@ -94,6 +108,7 @@ router.post('/', async (req, res) => {
             msg: 'Internal server error',
         });
     }
-});
+};
 
-export default router;
+
+export default registerNewLand;

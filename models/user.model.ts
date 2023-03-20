@@ -5,7 +5,6 @@ const permissionSchema = createSchema(
 		transfer: Type.boolean({ default: false, required: true }),
 		merge: Type.boolean({ default: false, required: true }),
 		split: Type.boolean({ default: false, required: true }),
-		lease: Type.boolean({ default: false, required: true }),
 	},
 	{
 		_id: false,
@@ -41,5 +40,5 @@ const userSchema = createSchema({
 });
 
 // create index for apikey
-const UserModel = typedModel("User", userSchema);
+const UserModel = typedModel("user", userSchema);
 export default UserModel;

@@ -4,10 +4,20 @@ import LandMergeModel, { landMergeSchema } from "../../models/landmerge.model"
 
 const ajv = new Ajv();
 
-const validateSchema = ajv.compile(landMergeSchema);
+const validateSchema = ajv.compile({
+    type: "object",
+    properties: {
+        propertyId: { type: "number" },
+        childIds: {
+            type: "array",
+            items: { type: "number" },
+        },
+    },
+    required: ["propertyId", "childIds"],
+});
 
-export const createLandMerge = async (req: Request, res: Response) => {
-    const { landId, firstName, aadharNumber, panNumber, addressProofA, addressProofB, scrutiny, status, propertyIds } = req.body;
+export const mergeLand = async (req: Request, res: Response) => {
+    const { propertyId, childIds } = req.body;
 
     const isValid = validateSchema(req.body);
 
@@ -19,29 +29,38 @@ export const createLandMerge = async (req: Request, res: Response) => {
         });
     }
 
+    // check if parent property exists
+    const parentProperty = await LandMergeModel.findOne({
+        propertyId,
+    });
+
+    if (parentProperty) {
+        return res.status(400).json({
+            msg: "Parent property already exists",
+            status: "error",
+        });
+    }
+
+
     try {
         const landMerge = await LandMergeModel.create({
-            landId,
-            firstName,
-            aadharNumber,
-            panNumber,
-            addressProofA,
-            addressProofB,
-            scrutiny,
-            status,
-            propertyIds,
+            propertyId,
+            childIds,
+            status: "pending",
         });
 
         return res.status(200).json({
-            status: "success",
             msg: "Land merge request created successfully",
+            status: "success",
             data: landMerge,
         });
     } catch (error) {
         return res.status(500).json({
-            status: "error",
             msg: "Failed to create land merge request",
+            status: "error",
             error,
         });
     }
 };
+
+export default mergeLand;

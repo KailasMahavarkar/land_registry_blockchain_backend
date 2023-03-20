@@ -1,5 +1,7 @@
 import { createReadStream } from 'streamifier';
 import cloudinary from '../cloudinary';
+import { imageHash } from 'image-hash';
+
 
 
 const _singleFileUpload = async (req, res, next) => {
@@ -23,6 +25,7 @@ const _singleFileUpload = async (req, res, next) => {
 
                 createReadStream(req.file.buffer)
                     .pipe(stream);
+
             });
         };
 
@@ -46,4 +49,4 @@ const _singleFileUpload = async (req, res, next) => {
 };
 
 
-module.exports = _singleFileUpload;
+export default _singleFileUpload;

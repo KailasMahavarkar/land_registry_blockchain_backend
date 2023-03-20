@@ -1,15 +1,16 @@
 import { createSchema, Type, typedModel } from "ts-mongoose";
+import { documentSchema } from "./common.schema";
 export const transferSchema = createSchema({
     _id: Type.objectId({
         auto: true,
     }),
 
-    landId: Type.string({ required: true }),
-    firstName: Type.string({ required: true }),
-    aadharNumber: Type.string({ required: true }),
-    panNumber: Type.string({ required: true }),
-    addressProofA: Type.string({ required: true }),
-    addressProofB: Type.string({ required: true }),
+    propertyId: Type.number({ required: true }),
+    newOwnerName: Type.string({ required: true }),
+    newOwnerAadhaarCardNumber: Type.string({ required: true }),
+    newOwnerPanCardNumber: Type.string({ required: true }),
+
+    documents: Type.array().of(documentSchema),
 
     // detailed logs of ongoing process
     scrutiny: Type.array().of({
@@ -29,5 +30,5 @@ export const transferSchema = createSchema({
     updateTS: Type.number({ required: true, default: Date.now() }),
 });
 
-const TransferModel = typedModel("transfer", transferSchema);
+const TransferModel = typedModel("landtransfer", transferSchema);
 export default TransferModel;

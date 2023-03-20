@@ -1,7 +1,12 @@
 import cloudinary from '../../cloudinary';
 
 const readImageCloudinary = async (req, res) => {
-    const imageId = req.body.publicId || req.body.imageId
+    let imageId = req.body.publicId || req.body.imageId
+
+    // try to get the imageId from the query string
+    if (!imageId) {
+        imageId = req.query.publicId || req.query.imageId
+    }
 
     if (!imageId) {
         return res.status(400).json({
