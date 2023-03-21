@@ -26,6 +26,8 @@ import multer from 'multer';
 import _singleFileUpload from './middlewares/_singleFileUpload';
 import { updateRecord } from './controllers/admin/updateLandRecord';
 import _multipleFileUpload from './middlewares/_multiFileUpload';
+import updateRegisterLand from './controllers/admin/updateRegisterLand';
+import updateMergeLand from './controllers/admin/updateMergeLand';
 
 const app = express();
 const upload = multer({});
@@ -99,6 +101,10 @@ app.post("/property/register", registerNewLand);
 app.post("/property/transfer", transferLand);
 app.post("/property/split", landSplit);
 app.post('/property/merge', mergeLand);
+
+app.patch("/property/register", updateRegisterLand);
+app.patch("/property/merge", updateMergeLand);
+
 
 // get land record
 app.patch('/property/:recordType', updateRecord);

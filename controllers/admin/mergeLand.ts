@@ -1,66 +1,43 @@
-import { Request, Response } from "express";
-import Ajv from "ajv";
-import LandMergeModel, { landMergeSchema } from "../../models/landmerge.model"
+import { registerAJVSchema } from '../../common_schema/ajv.schema';
+import LandMergeModel from '../../models/landmerge.model';
+import Ajv from 'ajv';
 
-const ajv = new Ajv();
 
-const validateSchema = ajv.compile({
-    type: "object",
-    properties: {
-        propertyId: { type: "number" },
-        childIds: {
-            type: "array",
-            items: { type: "number" },
-        },
-    },
-    required: ["propertyId", "childIds"],
-});
+// create a new land register record
+const mergeLand = async (req, res) => {
 
-export const mergeLand = async (req: Request, res: Response) => {
-    const { propertyId, childIds } = req.body;
-
-    const isValid = validateSchema(req.body);
+    const ajv = new Ajv();
+    const validate = ajv.compile(registerAJVSchema)
+    const isValid = validate(req.body);
 
     if (!isValid) {
         return res.status(400).json({
-            status: "error",
-            msg: "Invalid request body",
-            errors: validateSchema.errors,
+            status: 'error',
+            msg: 'Invalid request data',
+            errors: validate.errors,
         });
     }
 
-    // check if parent property exists
-    const parentProperty = await LandMergeModel.findOne({
-        propertyId,
-    });
-
-    if (parentProperty) {
-        return res.status(400).json({
-            msg: "Parent property already exists",
-            status: "error",
-        });
-    }
 
 
     try {
-        const landMerge = await LandMergeModel.create({
-            propertyId,
-            childIds,
-            status: "pending",
-        });
+        const newRecord = await LandMergeModel.create(req.body);
 
         return res.status(200).json({
-            msg: "Land merge request created successfully",
-            status: "success",
-            data: landMerge,
+            status: 'success',
+            msg: 'Land merge record created successfully',
+            data: newRecord,
         });
-    } catch (error) {
+    } catch (err) {
+
+        console.log("Error: ", err);
+
         return res.status(500).json({
-            msg: "Failed to create land merge request",
-            status: "error",
-            error,
+            status: 'error',
+            msg: 'Internal server error',
         });
     }
 };
+
 
 export default mergeLand;

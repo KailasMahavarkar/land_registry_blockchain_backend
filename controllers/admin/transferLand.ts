@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import Ajv from "ajv";
 import TransferModel from "../../models/landtransfer.model";
 
@@ -57,20 +58,6 @@ const transferLand = async (req, res) => {
 
     try {
 
-        // check if the propertyId exists in the database
-        const findRegister = await LandRegisterModel.exists({ propertyId: req.body.propertyId });
-        const findTransfer = await LandTransferModel.exists({ propertyId: req.body.propertyId });
-        const findSplit = await LandSplitModel.exists({ propertyId: req.body.propertyId });
-        const findMerge = await LandMergeModel.exists({ propertyId: req.body.propertyId });
-
-        // if anyof the above is true, send a 400 Bad Request response with an error message
-        if (findRegister || findTransfer || findSplit || findMerge) {
-            return res.status(400).json({
-                status: "error",
-                message: "Property already exists",
-            });
-        }
-
         // create a new transfer document using the request body
         const newTransfer = new TransferModel(req.body);
 
@@ -83,12 +70,13 @@ const transferLand = async (req, res) => {
             message: "Transfer created successfully",
         });
     } catch (error) {
+
         // if there's an error creating the new document, send a 500 Internal Server Error response with an error message
         console.error(error);
         return res.status(500).json({
             status: "error",
             message: "Error creating transfer",
-            error: error.message,
+            error: error.data,
         });
     }
 }
