@@ -5,6 +5,7 @@ const permissionSchema = createSchema(
 		transfer: Type.boolean({ default: false, required: true }),
 		merge: Type.boolean({ default: false, required: true }),
 		split: Type.boolean({ default: false, required: true }),
+        register: Type.boolean({ default: false, required: true }),
 	},
 	{
 		_id: false,
