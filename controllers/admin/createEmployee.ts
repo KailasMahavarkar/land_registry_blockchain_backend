@@ -1,4 +1,3 @@
-import { getQuery } from './../../helper';
 import { fakeNumString } from "../../helper";
 import UserModel from "../../models/user.model";
 

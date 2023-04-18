@@ -10,7 +10,7 @@ export const transferSchema = createSchema({
     newOwnerAadhaarCardNumber: Type.string({ required: true }),
     newOwnerPanCardNumber: Type.string({ required: true }),
 
-    documents: Type.array().of(documentSchema),
+    documents: documentSchema,
 
     // detailed logs of ongoing process
     scrutiny: Type.array().of({
